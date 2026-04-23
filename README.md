@@ -10,7 +10,7 @@ Sistema ERP simples para administrar uma loja de motocicletas elétricas, desenv
 - Gerenciamento de clientes (em desenvolvimento)
 - Registro de vendas (em desenvolvimento)
 
-## Como executar
+## Como executar localmente
 1. Instale as dependências:
    ```
    pip install -r requirements.txt
@@ -25,14 +25,32 @@ Sistema ERP simples para administrar uma loja de motocicletas elétricas, desenv
 
 4. Faça login com usuário: admin, senha: admin123
 
-## Hospedagem
-Para hospedar gratuitamente:
-- **Render**: Faça upload do código no GitHub e conecte ao Render
-- **Railway**: Similar ao Render, suporta Python
-- **Heroku**: Plataforma clássica para apps Python
+## Hospedagem no Render
+1. **Faça push do código para GitHub**:
+   ```
+   git add .
+   git commit -m "Preparar para deploy no Render"
+   git push origin main
+   ```
+
+2. **Acesse o Render** (https://render.com) e faça login
+
+3. **Crie um novo Web Service**:
+   - Conecte seu repositório GitHub
+   - Selecione o repositório `erp-motos`
+   - Configure:
+     - **Runtime**: Python 3
+     - **Build Command**: `pip install -r requirements.txt`
+     - **Start Command**: `gunicorn app:app`
+   - **Environment Variables**: Adicione `SECRET_KEY` com uma chave segura
+
+4. **Deploy**: O Render fará o build e deploy automaticamente
+
+5. **Acesse sua URL**: O Render fornecerá uma URL gratuita (ex: https://erp-motos.onrender.com)
 
 ## Estrutura do projeto
 - `app.py`: Aplicação principal Flask
 - `templates/`: Templates HTML
 - `erp_motos.db`: Banco de dados SQLite (criado automaticamente)
 - `requirements.txt`: Dependências Python
+- `Procfile`: Comando de start para Render

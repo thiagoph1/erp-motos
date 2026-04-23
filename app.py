@@ -7,7 +7,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 import os
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'sua-chave-secreta-aqui'  # Mude isso para produção
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'sua-chave-secreta-aqui'  # Usar variável de ambiente
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///erp_motos.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -112,4 +112,4 @@ if __name__ == '__main__':
             admin = User(username='admin', password='admin123')
             db.session.add(admin)
             db.session.commit()
-    app.run(debug=True)
+    app.run(debug=True)  # Apenas para desenvolvimento local
