@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1>Bem-vindo ao ERP Moto Chefe</h1>
+        <p>Sistema de administração para loja de motocicletas elétricas.</p>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Produtos</h5>
+                        <p class="card-text">Gerencie o estoque de motos e peças.</p>
+                        <a href="{{ url_for('produtos') }}" class="btn btn-primary">Ver Produtos</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Vendas</h5>
+                        <p class="card-text">Registre e acompanhe vendas.</p>
+                        <a href="#" class="btn btn-primary">Ver Vendas</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Clientes</h5>
+                        <p class="card-text">Gerencie informações dos clientes.</p>
+                        <a href="#" class="btn btn-primary">Ver Clientes</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
