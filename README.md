@@ -1,56 +1,84 @@
-# moto-chefe-ERP
-Sistema de ERP da Moto Chefe
+# 🏍️ Moto Chefe ERP
 
-## Descrição
-Sistema ERP simples para administrar uma loja de motocicletas elétricas, desenvolvido em Python com Flask e SQLite.
+Sistema de gestão para loja de motocicletas elétricas — Flask + SQLite.
 
 ## Funcionalidades
-- Autenticação de usuários
-- Gerenciamento de produtos (CRUD)
-- Gerenciamento de clientes (em desenvolvimento)
-- Registro de vendas (em desenvolvimento)
+- ✅ Login com senha criptografada (hash bcrypt via Werkzeug)
+- ✅ Perfis de acesso: **admin**, **gerente**, **vendedor**
+- ✅ Estoque de motos e peças com alerta de estoque mínimo
+- ✅ Registro de vendas com controle de estoque automático
+- ✅ Clientes (CRM básico)
+- ✅ Financeiro: receitas e despesas por mês
+- ✅ Dashboard com KPIs
+- ✅ Gerenciamento de usuários (somente admin)
 
-## Como executar localmente
-1. Instale as dependências:
-   ```
-   pip install -r requirements.txt
-   ```
+## Perfis de acesso
 
-2. Execute o aplicativo:
-   ```
-   python app.py
-   ```
+| Perfil    | Dashboard | Estoque | Vendas | Clientes | Financeiro | Usuários |
+|-----------|-----------|---------|--------|----------|------------|----------|
+| admin     | ✅        | ✅ + excluir | ✅  | ✅       | ✅ + excluir | ✅    |
+| gerente   | ✅        | ✅      | ✅     | ✅       | ✅         | ❌       |
+| vendedor  | ✅        | 👁️ ver  | ✅     | ✅       | ❌         | ❌       |
 
-3. Acesse http://localhost:5000 no navegador
+## Como rodar localmente
 
-4. Faça login com usuário: admin, senha: admin123
+```bash
+# 1. Clone o repositório
+git clone https://github.com/seu-usuario/moto-chefe-ERP.git
+cd moto-chefe-ERP
 
-## Hospedagem no Render
-1. **Faça push do código para GitHub**:
-   ```
-   git add .
-   git commit -m "Preparar para deploy no Render"
-   git push origin main
-   ```
+# 2. Crie um ambiente virtual
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
-2. **Acesse o Render** (https://render.com) e faça login
+# 3. Instale as dependências
+pip install -r requirements.txt
 
-3. **Crie um novo Web Service**:
-   - Conecte seu repositório GitHub
-   - Selecione o repositório `erp-motos`
-   - Configure:
-     - **Runtime**: Python 3
-     - **Build Command**: `pip install -r requirements.txt`
-     - **Start Command**: `gunicorn app:app`
-   - **Environment Variables**: Adicione `SECRET_KEY` com uma chave segura
+# 4. Configure o .env (copie o exemplo)
+cp .env.example .env
+# Edite o .env com uma SECRET_KEY segura
 
-4. **Deploy**: O Render fará o build e deploy automaticamente
+# 5. Execute
+python app.py
+```
 
-5. **Acesse sua URL**: O Render fornecerá uma URL gratuita (ex: https://erp-motos.onrender.com)
+Acesse: http://localhost:5000
+Login padrão: `admin` / `Admin@123` *(troque após o primeiro acesso!)*
+
+## Deploy no Render.com (gratuito)
+
+1. Faça push para o GitHub
+2. Acesse [render.com](https://render.com) → New Web Service
+3. Conecte o repositório
+4. Configure:
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn app:app`
+5. Em **Environment Variables**, adicione:
+   - `SECRET_KEY` = uma chave longa e aleatória
+6. Clique em **Deploy**
 
 ## Estrutura do projeto
-- `app.py`: Aplicação principal Flask
-- `templates/`: Templates HTML
-- `erp_motos.db`: Banco de dados SQLite (criado automaticamente)
-- `requirements.txt`: Dependências Python
-- `Procfile`: Comando de start para Render
+
+```
+moto-chefe-ERP/
+├── app.py                # Aplicação Flask (modelos, rotas, formulários)
+├── requirements.txt
+├── Procfile              # Comando para o Render
+├── .env.example          # Variáveis de ambiente (modelo)
+├── .gitignore
+└── templates/
+    ├── base.html         # Layout com sidebar
+    ├── login.html
+    ├── index.html        # Dashboard
+    ├── produtos.html
+    ├── produto_form.html
+    ├── usuarios.html
+    └── usuario_form.html
+```
+
+## Segurança
+- Senhas armazenadas com hash (Werkzeug `generate_password_hash`)
+- CSRF protection via Flask-WTF em todos os formulários
+- Controle de acesso por perfil com decorator `@requer_perfil`
+- `SECRET_KEY` carregada de variável de ambiente
+- `.env` e banco de dados no `.gitignore`

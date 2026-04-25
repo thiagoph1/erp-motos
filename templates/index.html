@@ -1,39 +1,153 @@
 {% extends "base.html" %}
+{% block title %}Dashboard – ERP Moto Chefe{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <h1>Bem-vindo ao ERP Moto Chefe</h1>
-        <p>Sistema de administração para loja de motocicletas elétricas.</p>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Produtos</h5>
-                        <p class="card-text">Gerencie o estoque de motos e peças.</p>
-                        <a href="{{ url_for('produtos') }}" class="btn btn-primary">Ver Produtos</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Vendas</h5>
-                        <p class="card-text">Registre e acompanhe vendas.</p>
-                        <a href="#" class="btn btn-primary">Ver Vendas</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Clientes</h5>
-                        <p class="card-text">Gerencie informações dos clientes.</p>
-                        <a href="#" class="btn btn-primary">Ver Clientes</a>
-                    </div>
-                </div>
-            </div>
+<!-- KPIs -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card kpi-card h-100 p-3" style="border-color:#00c896">
+      <div class="d-flex align-items-center gap-3">
+        <div class="kpi-icon" style="background:#d1fae5"><i class="bi bi-bicycle text-success"></i></div>
+        <div>
+          <div class="fs-4 fw-bold">{{ total_motos }}</div>
+          <div class="text-muted small">Motos em estoque</div>
         </div>
+      </div>
     </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card kpi-card h-100 p-3" style="border-color:#3b82f6">
+      <div class="d-flex align-items-center gap-3">
+        <div class="kpi-icon" style="background:#dbeafe"><i class="bi bi-box-seam text-primary"></i></div>
+        <div>
+          <div class="fs-4 fw-bold">{{ total_pecas }}</div>
+          <div class="text-muted small">Peças em estoque</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card kpi-card h-100 p-3" style="border-color:#f59e0b">
+      <div class="d-flex align-items-center gap-3">
+        <div class="kpi-icon" style="background:#fef3c7"><i class="bi bi-cart3 text-warning"></i></div>
+        <div>
+          <div class="fs-4 fw-bold">{{ vendas_mes }}</div>
+          <div class="text-muted small">Vendas no mês</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card kpi-card h-100 p-3" style="border-color:{% if saldo_mes >= 0 %}#10b981{% else %}#ef4444{% endif %}">
+      <div class="d-flex align-items-center gap-3">
+        <div class="kpi-icon" style="background:{% if saldo_mes >= 0 %}#d1fae5{% else %}#fee2e2{% endif %}">
+          <i class="bi bi-cash-stack {% if saldo_mes >= 0 %}text-success{% else %}text-danger{% endif %}"></i>
+        </div>
+        <div>
+          <div class="fs-5 fw-bold">R$ {{ '%.2f'|format(saldo_mes) }}</div>
+          <div class="text-muted small">Saldo do mês</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% if current_user.perfil in ['admin', 'gerente'] %}
+<!-- Financeiro do mês -->
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <span class="text-muted small">Receitas do mês</span>
+        <i class="bi bi-arrow-up-circle text-success"></i>
+      </div>
+      <div class="fs-4 fw-bold text-success mt-1">R$ {{ '%.2f'|format(receitas_mes) }}</div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <span class="text-muted small">Despesas do mês</span>
+        <i class="bi bi-arrow-down-circle text-danger"></i>
+      </div>
+      <div class="fs-4 fw-bold text-danger mt-1">R$ {{ '%.2f'|format(despesas_mes) }}</div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<div class="row g-3">
+  <!-- Últimas vendas -->
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center py-2 px-3">
+        <span class="fw-600 small">Últimas vendas</span>
+        <a href="{{ url_for('vendas') }}" class="btn btn-sm btn-outline-secondary py-0 px-2">Ver todas</a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th class="ps-3">#</th>
+              <th>Cliente</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Data</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for v in ultimas_vendas %}
+            <tr>
+              <td class="ps-3 text-muted">{{ v.id }}</td>
+              <td>{{ v.cliente.nome if v.cliente else '—' }}</td>
+              <td>R$ {{ '%.2f'|format(v.total) }}</td>
+              <td>
+                <span class="badge {% if v.status == 'concluida' %}bg-success{% else %}bg-secondary{% endif %} small">
+                  {{ v.status }}
+                </span>
+              </td>
+              <td class="text-muted">{{ v.criado_em.strftime('%d/%m %H:%M') }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted py-3">Nenhuma venda ainda.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alertas de estoque -->
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center py-2 px-3">
+        <span class="fw-600 small">
+          <i class="bi bi-exclamation-triangle-fill text-warning me-1"></i>Alertas de estoque
+        </span>
+        <a href="{{ url_for('produtos') }}" class="btn btn-sm btn-outline-secondary py-0 px-2">Ver estoque</a>
+      </div>
+      <div class="card-body p-0">
+        <table class="table table-sm mb-0">
+          <thead class="table-light">
+            <tr><th class="ps-3">Produto</th><th>Qtde</th><th>Mínimo</th></tr>
+          </thead>
+          <tbody>
+            {% for p in produtos_alerta %}
+            <tr class="{% if p.quantidade == 0 %}table-danger{% else %}table-warning{% endif %}">
+              <td class="ps-3">{{ p.nome }}</td>
+              <td><strong>{{ p.quantidade }}</strong></td>
+              <td class="text-muted">{{ p.estoque_minimo }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="3" class="text-center text-muted py-3">
+              <i class="bi bi-check-circle text-success me-1"></i>Estoque OK!
+            </td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

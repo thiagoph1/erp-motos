@@ -1,39 +1,89 @@
 {% extends "base.html" %}
+{% block title %}Produtos – ERP Moto Chefe{% endblock %}
+{% block page_title %}Estoque de Produtos{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1>Produtos</h1>
-            <a href="{{ url_for('novo_produto') }}" class="btn btn-success">Novo Produto</a>
-        </div>
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nome</th>
-                    <th>Descrição</th>
-                    <th>Preço</th>
-                    <th>Quantidade</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for produto in produtos %}
-                <tr>
-                    <td>{{ produto.id }}</td>
-                    <td>{{ produto.nome }}</td>
-                    <td>{{ produto.descricao or '-' }}</td>
-                    <td>R$ {{ "%.2f"|format(produto.preco) }}</td>
-                    <td>{{ produto.quantidade }}</td>
-                    <td>
-                        <a href="#" class="btn btn-sm btn-warning">Editar</a>
-                        <a href="#" class="btn btn-sm btn-danger">Excluir</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<div class="d-flex gap-2 mb-3 flex-wrap">
+  {% if current_user.perfil in ['admin', 'gerente'] %}
+  <a href="{{ url_for('produto_novo') }}" class="btn btn-sm" style="background:#00c896;color:#0f172a;font-weight:600">
+    <i class="bi bi-plus-lg me-1"></i>Novo produto
+  </a>
+  {% endif %}
+
+  <form class="d-flex gap-2 ms-auto" method="GET">
+    <select name="tipo" class="form-select form-select-sm" onchange="this.form.submit()" style="width:160px">
+      <option value="" {% if not tipo %}selected{% endif %}>Todos os tipos</option>
+      <option value="moto"  {% if tipo=='moto' %}selected{% endif %}>Motos</option>
+      <option value="peca"  {% if tipo=='peca' %}selected{% endif %}>Peças</option>
+    </select>
+    <input name="busca" type="search" value="{{ busca }}" placeholder="Buscar..." class="form-control form-control-sm" style="width:200px">
+    <button class="btn btn-sm btn-outline-secondary"><i class="bi bi-search"></i></button>
+  </form>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light">
+        <tr>
+          <th class="ps-3">Nome</th>
+          <th>Tipo</th>
+          <th>Marca / Modelo</th>
+          <th>Custo</th>
+          <th>Venda</th>
+          <th>Estoque</th>
+          {% if current_user.perfil in ['admin', 'gerente'] %}
+          <th></th>
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in produtos %}
+        <tr {% if p.abaixo_minimo %}class="table-warning"{% endif %}>
+          <td class="ps-3 fw-500">
+            {{ p.nome }}
+            {% if p.quantidade == 0 %}
+              <span class="badge bg-danger ms-1 small">Sem estoque</span>
+            {% elif p.abaixo_minimo %}
+              <span class="badge bg-warning text-dark ms-1 small">Baixo</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="badge {% if p.tipo == 'moto' %}bg-primary{% else %}bg-secondary{% endif %}">
+              {{ 'Moto' if p.tipo == 'moto' else 'Peça' }}
+            </span>
+          </td>
+          <td class="text-muted">{{ p.marca or '—' }} {{ p.modelo or '' }}</td>
+          <td class="text-muted">
+            {% if p.preco_custo %}R$ {{ '%.2f'|format(p.preco_custo) }}{% else %}—{% endif %}
+          </td>
+          <td class="fw-500">R$ {{ '%.2f'|format(p.preco_venda) }}</td>
+          <td>
+            <span class="fw-bold {% if p.quantidade == 0 %}text-danger{% elif p.abaixo_minimo %}text-warning{% else %}text-success{% endif %}">
+              {{ p.quantidade }}
+            </span>
+            <span class="text-muted small">/ {{ p.estoque_minimo }}</span>
+          </td>
+          {% if current_user.perfil in ['admin', 'gerente'] %}
+          <td class="text-end pe-3">
+            <a href="{{ url_for('produto_editar', id=p.id) }}" class="btn btn-sm btn-outline-secondary py-0 px-2">
+              <i class="bi bi-pencil"></i>
+            </a>
+            {% if current_user.perfil == 'admin' %}
+            <form method="POST" action="{{ url_for('produto_excluir', id=p.id) }}" class="d-inline"
+                  onsubmit="return confirm('Excluir produto {{ p.nome }}?')">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm btn-outline-danger py-0 px-2"><i class="bi bi-trash"></i></button>
+            </form>
+            {% endif %}
+          </td>
+          {% endif %}
+        </tr>
+        {% else %}
+        <tr><td colspan="7" class="text-center text-muted py-4">Nenhum produto encontrado.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endblock %}

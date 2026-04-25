@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Usuários – ERP Moto Chefe{% endblock %}
+{% block page_title %}Usuários e Acessos{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+  <a href="{{ url_for('usuario_novo') }}" class="btn btn-sm" style="background:#00c896;color:#0f172a;font-weight:600">
+    <i class="bi bi-person-plus me-1"></i>Novo usuário
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light">
+        <tr>
+          <th class="ps-3">Nome</th>
+          <th>Login</th>
+          <th>E-mail</th>
+          <th>Perfil</th>
+          <th>Status</th>
+          <th>Criado em</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for u in usuarios %}
+        <tr {% if not u.ativo %}class="text-muted"{% endif %}>
+          <td class="ps-3 fw-500">{{ u.nome }}</td>
+          <td><code>{{ u.username }}</code></td>
+          <td class="text-muted small">{{ u.email or '—' }}</td>
+          <td>
+            <span class="badge badge-{{ u.perfil }}">{{ u.perfil }}</span>
+          </td>
+          <td>
+            {% if u.ativo %}
+              <span class="badge bg-success">Ativo</span>
+            {% else %}
+              <span class="badge bg-secondary">Inativo</span>
+            {% endif %}
+          </td>
+          <td class="text-muted small">{{ u.criado_em.strftime('%d/%m/%Y') }}</td>
+          <td class="text-end pe-3">
+            <a href="{{ url_for('usuario_editar', id=u.id) }}" class="btn btn-sm btn-outline-secondary py-0 px-2">
+              <i class="bi bi-pencil"></i>
+            </a>
+            {% if u.id != current_user.id %}
+            <form method="POST" action="{{ url_for('usuario_desativar', id=u.id) }}" class="d-inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button class="btn btn-sm {% if u.ativo %}btn-outline-warning{% else %}btn-outline-success{% endif %} py-0 px-2"
+                      title="{{ 'Desativar' if u.ativo else 'Ativar' }}">
+                <i class="bi bi-{% if u.ativo %}pause{% else %}play{% endif %}"></i>
+              </button>
+            </form>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="mt-3 small text-muted">
+  <i class="bi bi-info-circle me-1"></i>
+  <strong>Perfis:</strong>
+  <span class="badge badge-admin">admin</span> acesso total &nbsp;|&nbsp;
+  <span class="badge badge-gerente">gerente</span> acesso a vendas, estoque e financeiro &nbsp;|&nbsp;
+  <span class="badge badge-vendedor">vendedor</span> apenas vendas e clientes
+</div>
+{% endblock %}

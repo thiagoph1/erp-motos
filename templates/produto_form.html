@@ -1,35 +1,60 @@
 {% extends "base.html" %}
+{% block title %}{{ titulo }} – ERP Moto Chefe{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header">
-                <h3>Novo Produto</h3>
+  <div class="col-lg-7">
+    <div class="card">
+      <div class="card-body p-4">
+        <form method="POST">
+          {{ form.hidden_tag() }}
+          <div class="row g-3">
+            <div class="col-12">
+              {{ form.nome.label(class="form-label fw-600 small") }}
+              {{ form.nome(class="form-control form-control-sm") }}
             </div>
-            <div class="card-body">
-                <form method="POST">
-                    {{ form.hidden_tag() }}
-                    <div class="mb-3">
-                        {{ form.nome.label(class="form-label") }}
-                        {{ form.nome(class="form-control") }}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.descricao.label(class="form-label") }}
-                        {{ form.descricao(class="form-control") }}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.preco.label(class="form-label") }}
-                        {{ form.preco(class="form-control") }}
-                    </div>
-                    <div class="mb-3">
-                        {{ form.quantidade.label(class="form-label") }}
-                        {{ form.quantidade(class="form-control") }}
-                    </div>
-                    {{ form.submit(class="btn btn-primary") }}
-                </form>
+            <div class="col-md-6">
+              {{ form.tipo.label(class="form-label fw-600 small") }}
+              {{ form.tipo(class="form-select form-select-sm") }}
             </div>
-        </div>
+            <div class="col-md-3">
+              {{ form.marca.label(class="form-label fw-600 small") }}
+              {{ form.marca(class="form-control form-control-sm") }}
+            </div>
+            <div class="col-md-3">
+              {{ form.modelo.label(class="form-label fw-600 small") }}
+              {{ form.modelo(class="form-control form-control-sm") }}
+            </div>
+            <div class="col-12">
+              {{ form.descricao.label(class="form-label fw-600 small") }}
+              {{ form.descricao(class="form-control form-control-sm", rows=2) }}
+            </div>
+            <div class="col-md-4">
+              {{ form.preco_custo.label(class="form-label fw-600 small") }}
+              {{ form.preco_custo(class="form-control form-control-sm", placeholder="0.00") }}
+            </div>
+            <div class="col-md-4">
+              {{ form.preco_venda.label(class="form-label fw-600 small") }}
+              {{ form.preco_venda(class="form-control form-control-sm", placeholder="0.00") }}
+            </div>
+            <div class="col-md-2">
+              {{ form.quantidade.label(class="form-label fw-600 small") }}
+              {{ form.quantidade(class="form-control form-control-sm", placeholder="0") }}
+            </div>
+            <div class="col-md-2">
+              {{ form.estoque_minimo.label(class="form-label fw-600 small") }}
+              {{ form.estoque_minimo(class="form-control form-control-sm", placeholder="1") }}
+            </div>
+          </div>
+          <hr class="my-3">
+          <div class="d-flex gap-2">
+            {{ form.submit(class="btn btn-sm px-4", style="background:#00c896;color:#0f172a;font-weight:600") }}
+            <a href="{{ url_for('produtos') }}" class="btn btn-sm btn-outline-secondary px-4">Cancelar</a>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}
