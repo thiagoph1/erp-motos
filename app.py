@@ -46,12 +46,17 @@ def create_app():
     # Context processor para variáveis globais
     @app.context_processor
     def inject_globals():
+        from flask_wtf.csrf import generate_csrf
         alertas = 0
         try:
             alertas = contar_alertas_estoque()
         except:
             pass  # Em caso de erro no banco, retorna 0
-        return dict(now=datetime.now(), alertas_estoque=alertas)
+        return dict(
+            now=datetime.now(),
+            alertas_estoque=alertas,
+            csrf_token=generate_csrf
+        )
 
     # Criar tabelas e usuário admin se necessário
     with app.app_context():
