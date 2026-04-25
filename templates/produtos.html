@@ -32,6 +32,7 @@
           <th>Custo</th>
           <th>Venda</th>
           <th>Estoque</th>
+          <th></th>
           {% if current_user.perfil in ['admin', 'gerente'] %}
           <th></th>
           {% endif %}
@@ -63,6 +64,11 @@
               {{ p.quantidade }}
             </span>
             <span class="text-muted small">/ {{ p.estoque_minimo }}</span>
+          </td>
+          <td class="text-end">
+            <a href="{{ url_for('lojas.estoque', produto=p.id) }}" class="btn btn-sm btn-outline-info py-0 px-2" title="Ver estoque por loja">
+              <i class="bi bi-shop"></i>
+            </a>
           </td>
           {% if current_user.perfil in ['admin', 'gerente'] %}
           <td class="text-end pe-3">

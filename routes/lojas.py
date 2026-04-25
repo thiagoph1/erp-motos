@@ -76,15 +76,26 @@ def _load_estoque_choices(form):
 def estoque():
     """Lista todos os estoques por loja"""
     loja_id = request.args.get('loja', type=int)
+    produto_id = request.args.get('produto', type=int)
     query = EstoqueLoja.query.join(Loja).join(Produto)
 
     if loja_id:
         query = query.filter(EstoqueLoja.loja_id == loja_id)
+    if produto_id:
+        query = query.filter(EstoqueLoja.produto_id == produto_id)
 
     estoques = query.order_by(Loja.nome, Produto.nome).all()
     lojas = Loja.query.order_by(Loja.nome).all()
+    produtos = Produto.query.order_by(Produto.nome).all()
 
-    return render_template('estoques_lojas.html', estoques=estoques, lojas=lojas, loja_id=loja_id)
+    return render_template(
+        'estoques_lojas.html',
+        estoques=estoques,
+        lojas=lojas,
+        produtos=produtos,
+        loja_id=loja_id,
+        produto_id=produto_id
+    )
 
 
 @lojas_bp.route('/estoque/novo', methods=['GET', 'POST'])

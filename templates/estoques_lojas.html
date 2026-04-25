@@ -17,12 +17,18 @@
 </div>
 
 <div class="row mb-3">
-  <div class="col-md-4">
-    <form method="GET" class="d-flex gap-2">
-      <select name="loja" class="form-select form-select-sm">
+  <div class="col-md-6">
+    <form method="GET" class="d-flex gap-2 flex-wrap">
+      <select name="loja" class="form-select form-select-sm" style="min-width:180px">
         <option value="">Todas as lojas</option>
         {% for loja in lojas %}
           <option value="{{ loja.id }}" {% if loja_id == loja.id %}selected{% endif %}>{{ loja.nome }}</option>
+        {% endfor %}
+      </select>
+      <select name="produto" class="form-select form-select-sm" style="min-width:220px">
+        <option value="">Todos os produtos</option>
+        {% for produto in produtos %}
+          <option value="{{ produto.id }}" {% if produto_id == produto.id %}selected{% endif %}>{{ produto.nome }}</option>
         {% endfor %}
       </select>
       <button type="submit" class="btn btn-sm btn-outline-primary">Filtrar</button>
@@ -40,6 +46,7 @@
           <th>Quantidade</th>
           <th>Estoque mínimo</th>
           <th>Valor total</th>
+          <th>Mínimo global</th>
           <th></th>
         </tr>
       </thead>
@@ -51,6 +58,7 @@
           <td>{{ estoque.quantidade }}</td>
           <td>{{ estoque.estoque_minimo }}</td>
           <td>{{ estoque.valor_total | formatar_moeda }}</td>
+          <td class="text-muted small">{{ estoque.produto.estoque_minimo }} mínimo global</td>
           <td class="text-end pe-3">
             <div class="btn-group" role="group">
               <a href="{{ url_for('lojas.estoque_editar', id=estoque.id) }}" class="btn btn-sm btn-outline-primary py-0 px-2" title="Editar">
@@ -65,7 +73,7 @@
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="6" class="text-center text-muted py-4">
+        <tr><td colspan="7" class="text-center text-muted py-4">
           <i class="bi bi-box-seam display-4 text-muted"></i>
           <div>Nenhum registro de estoque por loja encontrado.</div>
         </td></tr>
