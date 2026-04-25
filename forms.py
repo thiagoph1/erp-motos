@@ -39,8 +39,6 @@ class ProdutoForm(FlaskForm):
     descricao = TextAreaField('Descrição', validators=[Optional()])
     preco_custo = FloatField('Preço de custo (R$)', validators=[Optional()])
     preco_venda = FloatField('Preço de venda (R$)', validators=[DataRequired()])
-    quantidade = IntegerField('Quantidade em estoque', validators=[DataRequired()])
-    estoque_minimo = IntegerField('Estoque mínimo', validators=[DataRequired()])
     submit = SubmitField('Salvar')
 
 

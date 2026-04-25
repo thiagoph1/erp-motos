@@ -43,9 +43,7 @@ def novo():
             modelo=form.modelo.data,
             descricao=form.descricao.data,
             preco_custo=form.preco_custo.data or 0,
-            preco_venda=form.preco_venda.data,
-            quantidade=form.quantidade.data,
-            estoque_minimo=form.estoque_minimo.data
+            preco_venda=form.preco_venda.data
         )
 
         db.session.add(produto)
@@ -73,8 +71,6 @@ def editar(id):
         produto.descricao = form.descricao.data
         produto.preco_custo = form.preco_custo.data or 0
         produto.preco_venda = form.preco_venda.data
-        produto.quantidade = form.quantidade.data
-        produto.estoque_minimo = form.estoque_minimo.data
 
         db.session.commit()
         flash('Produto atualizado com sucesso!', 'success')

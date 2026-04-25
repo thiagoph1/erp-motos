@@ -49,24 +49,20 @@ class Produto(db.Model):
     descricao = db.Column(db.Text)
     preco_custo = db.Column(db.Float, default=0.0)
     preco_venda = db.Column(db.Float, nullable=False)
-    quantidade = db.Column(db.Integer, default=0)
-    estoque_minimo = db.Column(db.Integer, default=1)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Relacionamentos
     itens_venda = db.relationship('ItemVenda', backref='produto', lazy=True)
 
     @property
-    def quantidade_total(self):
-        """Quantidade total em todas as lojas, usando estoque por loja quando disponível."""
-        if self.estoques_loja:
-            return sum(estoque.quantidade for estoque in self.estoques_loja)
-        return self.quantidade
+    def quantidade(self):
+        """Quantidade total sincronizada de todas as lojas"""
+        return sum(estoque.quantidade for estoque in self.estoques_loja) if self.estoques_loja else 0
 
     @property
     def abaixo_minimo(self):
-        """Verifica se o produto está abaixo do estoque mínimo global"""
-        return self.quantidade_total <= self.estoque_minimo
+        """Verifica se o produto está abaixo do estoque mínimo em alguma loja"""
+        return any(estoque.abaixo_minimo for estoque in self.estoques_loja) if self.estoques_loja else False
 
     @property
     def margem(self):

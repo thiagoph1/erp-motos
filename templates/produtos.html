@@ -63,7 +63,6 @@
             <span class="fw-bold {% if p.quantidade == 0 %}text-danger{% elif p.abaixo_minimo %}text-warning{% else %}text-success{% endif %}">
               {{ p.quantidade }}
             </span>
-            <span class="text-muted small">/ {{ p.estoque_minimo }}</span>
           </td>
           <td class="text-end">
             <a href="{{ url_for('lojas.estoque', produto=p.id) }}" class="btn btn-sm btn-outline-info py-0 px-2" title="Ver estoque por loja">
