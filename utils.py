@@ -3,17 +3,17 @@ Funções utilitárias da aplicação
 """
 from datetime import datetime
 from flask import current_app
-from models import Produto
+from models import Produto, EstoqueLoja
 
 
 def contar_alertas_estoque():
     """
-    Conta quantos produtos estão abaixo do estoque mínimo
+    Conta quantos produtos estão abaixo do estoque mínimo em qualquer loja
 
     Returns:
         int: Número de produtos com alerta de estoque
     """
-    return Produto.query.filter(Produto.quantidade <= Produto.estoque_minimo).count()
+    return EstoqueLoja.query.filter(EstoqueLoja.quantidade <= EstoqueLoja.estoque_minimo).count()
 
 
 def formatar_moeda(valor):
@@ -62,8 +62,12 @@ def calcular_totais_dashboard():
 
     # Contadores básicos
     totais = {
-        'total_motos': Produto.query.filter_by(tipo='moto').count(),
-        'total_pecas': Produto.query.filter_by(tipo='peca').count(),
+        'total_motos': db.session.query(db.func.sum(EstoqueLoja.quantidade)).filter(
+            EstoqueLoja.produto.has(tipo='moto')
+        ).scalar() or 0,
+        'total_pecas': db.session.query(db.func.sum(EstoqueLoja.quantidade)).filter(
+            EstoqueLoja.produto.has(tipo='peca')
+        ).scalar() or 0,
         'total_clientes': Cliente.query.count(),
         'total_usuarios': Usuario.query.count(),
     }

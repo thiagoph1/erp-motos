@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}Lojas – ERP Mobility{% endblock %}
+{% block page_title %}Lojas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a href="{{ url_for('lojas.novo') }}" class="btn btn-sm" style="background:#00c896;color:#0f172a;font-weight:600">
+    <i class="bi bi-shop me-1"></i>Nova loja
+  </a>
+  <a href="{{ url_for('lojas.estoque') }}" class="btn btn-sm btn-outline-primary">
+    <i class="bi bi-box-seam me-1"></i>Ver estoque por loja
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light">
+        <tr>
+          <th class="ps-3">Nome</th>
+          <th>Endereço</th>
+          <th>Telefone</th>
+          <th>E-mail</th>
+          <th>Produtos</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for l in lojas %}
+        <tr {% if not l.ativo %}class="text-muted"{% endif %}>
+          <td class="ps-3 fw-500">{{ l.nome }}</td>
+          <td>{{ l.endereco or '-' }}</td>
+          <td>{{ l.telefone or '-' }}</td>
+          <td>{{ l.email or '-' }}</td>
+          <td>
+            <span class="badge bg-info">{{ l.total_produtos }}</span>
+          </td>
+          <td>
+            {% if l.ativo %}
+              <span class="badge bg-success">Ativa</span>
+            {% else %}
+              <span class="badge bg-secondary">Inativa</span>
+            {% endif %}
+          </td>
+          <td class="text-end pe-3">
+            <div class="btn-group" role="group">
+              <a href="{{ url_for('lojas.editar', id=l.id) }}" class="btn btn-sm btn-outline-primary py-0 px-2" title="Editar">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <form method="POST" action="{{ url_for('lojas.toggle', id=l.id) }}" class="d-inline">
+                <button type="submit" class="btn btn-sm {% if l.ativo %}btn-outline-warning{% else %}btn-outline-success{% endif %} py-0 px-2"
+                        title="{% if l.ativo %}Desativar{% else %}Ativar{% endif %}"
+                        onclick="return confirm('{% if l.ativo %}Desativar{% else %}Ativar{% endif %} loja {{ l.nome }}?')">
+                  <i class="bi bi-{% if l.ativo %}pause{% else %}play{% endif %}"></i>
+                </button>
+              </form>
+              <form method="POST" action="{{ url_for('lojas.excluir', id=l.id) }}" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Excluir"
+                        onclick="return confirm('Excluir loja {{ l.nome }}? Esta ação não pode ser desfeita.')">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if not lojas %}
+<div class="text-center py-5">
+  <i class="bi bi-shop display-1 text-muted mb-3"></i>
+  <h5 class="text-muted">Nenhuma loja cadastrada</h5>
+  <p class="text-muted">Comece cadastrando sua primeira loja.</p>
+  <a href="{{ url_for('lojas.novo') }}" class="btn btn-primary">
+    <i class="bi bi-plus-circle me-2"></i>Cadastrar primeira loja
+  </a>
+</div>
+{% endif %}
+
+{% endblock %}

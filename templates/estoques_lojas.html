@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Estoque por Loja – ERP Mobility{% endblock %}
+{% block page_title %}Estoque por Loja{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <a href="{{ url_for('lojas.index') }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Voltar para lojas
+    </a>
+  </div>
+  <div>
+    <a href="{{ url_for('lojas.estoque_novo') }}" class="btn btn-sm" style="background:#00c896;color:#0f172a;font-weight:600">
+      <i class="bi bi-box-seam me-1"></i> Novo estoque por loja
+    </a>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-4">
+    <form method="GET" class="d-flex gap-2">
+      <select name="loja" class="form-select form-select-sm">
+        <option value="">Todas as lojas</option>
+        {% for loja in lojas %}
+          <option value="{{ loja.id }}" {% if loja_id == loja.id %}selected{% endif %}>{{ loja.nome }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="btn btn-sm btn-outline-primary">Filtrar</button>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light">
+        <tr>
+          <th class="ps-3">Loja</th>
+          <th>Produto</th>
+          <th>Quantidade</th>
+          <th>Estoque mínimo</th>
+          <th>Valor total</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for estoque in estoques %}
+        <tr {% if estoque.abaixo_minimo %}class="table-warning"{% endif %}>
+          <td class="ps-3">{{ estoque.loja.nome }}</td>
+          <td>{{ estoque.produto.nome }}</td>
+          <td>{{ estoque.quantidade }}</td>
+          <td>{{ estoque.estoque_minimo }}</td>
+          <td>{{ estoque.valor_total | formatar_moeda }}</td>
+          <td class="text-end pe-3">
+            <div class="btn-group" role="group">
+              <a href="{{ url_for('lojas.estoque_editar', id=estoque.id) }}" class="btn btn-sm btn-outline-primary py-0 px-2" title="Editar">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <form method="POST" action="{{ url_for('lojas.estoque_excluir', id=estoque.id) }}" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-danger py-0 px-2" title="Excluir" onclick="return confirm('Excluir este registro de estoque?')">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center text-muted py-4">
+          <i class="bi bi-box-seam display-4 text-muted"></i>
+          <div>Nenhum registro de estoque por loja encontrado.</div>
+        </td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

@@ -57,9 +57,16 @@ class Produto(db.Model):
     itens_venda = db.relationship('ItemVenda', backref='produto', lazy=True)
 
     @property
+    def quantidade_total(self):
+        """Quantidade total em todas as lojas, usando estoque por loja quando disponível."""
+        if self.estoques_loja:
+            return sum(estoque.quantidade for estoque in self.estoques_loja)
+        return self.quantidade
+
+    @property
     def abaixo_minimo(self):
-        """Verifica se o produto está abaixo do estoque mínimo"""
-        return self.quantidade <= self.estoque_minimo
+        """Verifica se o produto está abaixo do estoque mínimo global"""
+        return self.quantidade_total <= self.estoque_minimo
 
     @property
     def margem(self):
@@ -68,8 +75,13 @@ class Produto(db.Model):
             return ((self.preco_venda - self.preco_custo) / self.preco_custo) * 100
         return None
 
+    @property
+    def estoques_por_loja(self):
+        """Retorna dicionário com quantidade por loja"""
+        return {estoque.loja.nome: estoque.quantidade for estoque in self.estoques_loja}
+
     def __repr__(self):
-        return f'<Produto {self.nome} ({self.tipo})>'
+        return f'<Produto {self.nome} ({self.tipo}) - Total: {self.quantidade}>'
 
 
 class Cliente(db.Model):
@@ -141,3 +153,59 @@ class Lancamento(db.Model):
 
     def __repr__(self):
         return f'<Lancamento {self.descricao} - R$ {self.valor:.2f}>'
+
+
+class Loja(db.Model):
+    """Modelo de loja"""
+    __tablename__ = 'loja'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    endereco = db.Column(db.String(200))
+    telefone = db.Column(db.String(20))
+    email = db.Column(db.String(120))
+    ativo = db.Column(db.Boolean, default=True)
+    criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+
+    # Relacionamentos
+    estoques = db.relationship('EstoqueLoja', backref='loja', lazy=True)
+
+    @property
+    def total_produtos(self):
+        """Total de produtos em estoque nesta loja"""
+        return sum(estoque.quantidade for estoque in self.estoques if estoque.quantidade > 0)
+
+    def __repr__(self):
+        return f'<Loja {self.nome}>'
+
+
+class EstoqueLoja(db.Model):
+    """Modelo de estoque por loja"""
+    __tablename__ = 'estoque_loja'
+
+    id = db.Column(db.Integer, primary_key=True)
+    loja_id = db.Column(db.Integer, db.ForeignKey('loja.id'), nullable=False)
+    produto_id = db.Column(db.Integer, db.ForeignKey('produto.id'), nullable=False)
+    quantidade = db.Column(db.Integer, default=0)
+    estoque_minimo = db.Column(db.Integer, default=1)
+    ultima_atualizacao = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    # Relacionamentos
+    produto = db.relationship('Produto', backref='estoques_loja')
+
+    __table_args__ = (
+        db.UniqueConstraint('loja_id', 'produto_id', name='unique_loja_produto'),
+    )
+
+    @property
+    def abaixo_minimo(self):
+        """Verifica se o estoque está abaixo do mínimo"""
+        return self.quantidade <= self.estoque_minimo
+
+    @property
+    def valor_total(self):
+        """Calcula o valor total do estoque (preço de venda)"""
+        return self.quantidade * self.produto.preco_venda
+
+    def __repr__(self):
+        return f'<EstoqueLoja {self.loja.nome} - {self.produto.nome}: {self.quantidade}>'

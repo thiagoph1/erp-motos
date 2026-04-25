@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}{{ titulo }} – ERP Mobility{% endblock %}
+{% block page_title %}{{ titulo }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card">
+      <div class="card-body p-4">
+        <form method="POST">
+          {{ form.hidden_tag() }}
+          <div class="row g-3">
+            <div class="col-12">
+              {{ form.nome.label(class="form-label fw-600 small") }}
+              {{ form.nome(class="form-control form-control-sm") }}
+            </div>
+            <div class="col-12">
+              {{ form.endereco.label(class="form-label fw-600 small") }}
+              {{ form.endereco(class="form-control form-control-sm", placeholder="opcional") }}
+            </div>
+            <div class="col-md-6">
+              {{ form.telefone.label(class="form-label fw-600 small") }}
+              {{ form.telefone(class="form-control form-control-sm", placeholder="opcional") }}
+            </div>
+            <div class="col-md-6">
+              {{ form.email.label(class="form-label fw-600 small") }}
+              {{ form.email(class="form-control form-control-sm", placeholder="opcional") }}
+            </div>
+          </div>
+
+          <div class="alert alert-info small mt-3 py-2">
+            <i class="bi bi-shop me-1"></i>
+            Cadastre as informações da loja. O endereço e contato são opcionais.
+          </div>
+
+          <div class="d-flex gap-2 mt-2">
+            {{ form.submit(class="btn btn-sm px-4", style="background:#00c896;color:#0f172a;font-weight:600") }}
+            <a href="{{ url_for('lojas.index') }}" class="btn btn-sm btn-outline-secondary px-4">Cancelar</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

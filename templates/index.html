@@ -130,12 +130,13 @@
       <div class="card-body p-0">
         <table class="table table-sm mb-0">
           <thead class="table-light">
-            <tr><th class="ps-3">Produto</th><th>Qtde</th><th>Mínimo</th></tr>
+            <tr><th class="ps-3">Produto</th><th>Loja</th><th>Qtde</th><th>Mínimo</th></tr>
           </thead>
           <tbody>
             {% for p in produtos_alerta %}
             <tr class="{% if p.quantidade == 0 %}table-danger{% else %}table-warning{% endif %}">
-              <td class="ps-3">{{ p.nome }}</td>
+              <td class="ps-3">{{ p.produto.nome }}</td>
+              <td>{{ p.loja.nome }}</td>
               <td><strong>{{ p.quantidade }}</strong></td>
               <td class="text-muted">{{ p.estoque_minimo }}</td>
             </tr>

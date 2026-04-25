@@ -65,3 +65,21 @@ class LancamentoForm(FlaskForm):
     categoria = StringField('Categoria', validators=[Optional()])
     data = StringField('Data', validators=[DataRequired()])
     submit = SubmitField('Salvar')
+
+
+class LojaForm(FlaskForm):
+    """Formulário para criação/edição de lojas"""
+    nome = StringField('Nome da loja', validators=[DataRequired(), Length(2, 100)])
+    endereco = StringField('Endereço', validators=[Optional()])
+    telefone = StringField('Telefone', validators=[Optional()])
+    email = StringField('E-mail', validators=[Optional(), Email()])
+    submit = SubmitField('Salvar')
+
+
+class EstoqueLojaForm(FlaskForm):
+    """Formulário para estoque por loja"""
+    loja_id = SelectField('Loja', coerce=int, validators=[DataRequired()])
+    produto_id = SelectField('Produto', coerce=int, validators=[DataRequired()])
+    quantidade = IntegerField('Quantidade', validators=[DataRequired()])
+    estoque_minimo = IntegerField('Estoque mínimo', validators=[DataRequired()])
+    submit = SubmitField('Salvar')

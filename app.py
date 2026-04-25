@@ -8,7 +8,7 @@ from datetime import datetime
 # Importações locais
 from config import Config
 from models import db
-from utils import contar_alertas_estoque
+from utils import contar_alertas_estoque, formatar_moeda
 
 # Blueprints
 from routes.auth import auth_bp
@@ -18,6 +18,7 @@ from routes.produtos import produtos_bp
 from routes.vendas import vendas_bp
 from routes.clientes import clientes_bp
 from routes.financeiro import financeiro_bp
+from routes.lojas import lojas_bp
 
 
 def create_app():
@@ -42,6 +43,10 @@ def create_app():
     app.register_blueprint(vendas_bp)
     app.register_blueprint(clientes_bp)
     app.register_blueprint(financeiro_bp)
+    app.register_blueprint(lojas_bp)
+
+    # Registrar filtros Jinja
+    app.add_template_filter(formatar_moeda, 'formatar_moeda')
 
     # Configurar login manager
     from models import Usuario

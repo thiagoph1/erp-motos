@@ -117,6 +117,10 @@
         <span class="badge bg-danger ms-auto" style="font-size:.65rem">{{ alertas_estoque }}</span>
       {% endif %}
     </a>
+    <a href="{{ url_for('lojas.index') }}"
+       class="nav-link {% if 'loja' in (request.endpoint or '') %}active{% endif %}">
+      <i class="bi bi-shop"></i> Lojas
+    </a>
   </nav>
 
   <div class="nav-section">Comercial</div>
