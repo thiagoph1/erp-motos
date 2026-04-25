@@ -15,6 +15,9 @@ from routes.auth import auth_bp
 from routes.main import main_bp
 from routes.usuarios import usuarios_bp
 from routes.produtos import produtos_bp
+from routes.vendas import vendas_bp
+from routes.clientes import clientes_bp
+from routes.financeiro import financeiro_bp
 
 
 def create_app():
@@ -36,6 +39,9 @@ def create_app():
     app.register_blueprint(main_bp)
     app.register_blueprint(usuarios_bp)
     app.register_blueprint(produtos_bp)
+    app.register_blueprint(vendas_bp)
+    app.register_blueprint(clientes_bp)
+    app.register_blueprint(financeiro_bp)
 
     # Configurar login manager
     from models import Usuario

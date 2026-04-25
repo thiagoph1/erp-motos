@@ -95,22 +95,22 @@
 <body>
 
 <div class="sidebar">
-  <a href="{{ url_for('index') }}" class="brand">
+  <a href="{{ url_for('main.index') }}" class="brand">
     <i class="bi bi-lightning-charge-fill" style="font-size:1.3rem"></i>
     Moto <span>Chefe</span>
   </a>
 
   <div class="nav-section">Principal</div>
   <nav class="nav flex-column">
-    <a href="{{ url_for('index') }}"
-       class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+    <a href="{{ url_for('main.index') }}"
+       class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">
       <i class="bi bi-speedometer2"></i> Dashboard
     </a>
   </nav>
 
   <div class="nav-section">Estoque</div>
   <nav class="nav flex-column">
-    <a href="{{ url_for('produtos') }}"
+    <a href="{{ url_for('produtos.index') }}"
        class="nav-link {% if 'produto' in (request.endpoint or '') %}active{% endif %}">
       <i class="bi bi-box-seam"></i> Produtos
       {% if alertas_estoque > 0 %}
@@ -144,7 +144,7 @@
   {% if current_user.perfil == 'admin' %}
   <div class="nav-section">Admin</div>
   <nav class="nav flex-column">
-    <a href="{{ url_for('usuarios') }}"
+    <a href="{{ url_for('usuarios.index') }}"
        class="nav-link {% if 'usuario' in (request.endpoint or '') %}active{% endif %}">
       <i class="bi bi-shield-lock"></i> Usuários e Acessos
     </a>
@@ -157,7 +157,7 @@
       <strong>{{ current_user.nome.split()[0] }}</strong>
       <small>{{ current_user.perfil }}</small>
     </div>
-    <a href="{{ url_for('logout') }}" title="Sair"><i class="bi bi-box-arrow-right"></i></a>
+    <a href="{{ url_for('auth.logout') }}" title="Sair"><i class="bi bi-box-arrow-right"></i></a>
   </div>
 </div>
 
