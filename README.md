@@ -1,6 +1,30 @@
 # 🏍️ Moto Chefe ERP
 
-Sistema de gestão para loja de motocicletas elétricas — Flask + SQLite.
+Sistema de gestão para loja de motocicletas elétricas — Flask + PostgreSQL.
+
+## 🏗️ Arquitetura Modular
+
+O projeto foi refatorado para uma arquitetura modular organizada:
+
+```
+erp-motos/
+├── app.py              # Aplicação principal (factory pattern)
+├── config.py           # Configurações da aplicação
+├── models.py           # Modelos do banco de dados
+├── forms.py            # Formulários WTForms
+├── auth.py             # Decorators de autenticação
+├── utils.py            # Funções utilitárias
+├── routes/             # Blueprints organizados por funcionalidade
+│   ├── auth.py         # Rotas de login/logout
+│   ├── main.py         # Dashboard e rotas principais
+│   ├── usuarios.py     # Gestão de usuários
+│   └── produtos.py     # Gestão de produtos
+├── templates/          # Templates HTML
+├── requirements.txt    # Dependências Python
+├── runtime.txt         # Versão Python (Railway)
+├── Procfile           # Configuração gunicorn
+└── .env.example       # Exemplo de variáveis de ambiente
+```
 
 ## Funcionalidades
 - ✅ Login com senha criptografada (hash bcrypt via Werkzeug)
@@ -20,7 +44,7 @@ Sistema de gestão para loja de motocicletas elétricas — Flask + SQLite.
 | gerente   | ✅        | ✅      | ✅     | ✅       | ✅         | ❌       |
 | vendedor  | ✅        | 👁️ ver  | ✅     | ✅       | ❌         | ❌       |
 
-## Como rodar localmente
+## 🚀 Como rodar localmente
 
 ```bash
 # 1. Clone o repositório
@@ -45,9 +69,64 @@ python app.py
 Acesse: http://localhost:5000
 Login padrão: `admin` / `Admin@123` *(troque após o primeiro acesso!)*
 
-## Deploy no Render.com (gratuito)
+## 🐘 Deploy no Railway (PostgreSQL)
 
-1. Faça push para o GitHub
+1. **Configure o projeto no Railway**:
+   - Conecte seu repositório GitHub
+   - Adicione PostgreSQL (Railway cria automaticamente)
+   - Copie a `DATABASE_URL` gerada
+
+2. **Configure variáveis de ambiente**:
+   ```bash
+   SECRET_KEY=sua-chave-super-segura-aqui
+   DATABASE_URL=postgresql://user:pass@host:5432/railway
+   ```
+
+3. **Deploy automático**:
+   - Railway detecta mudanças no GitHub
+   - Instala dependências automaticamente
+   - Usa PostgreSQL para produção
+
+## 📊 Benefícios da Arquitetura Modular
+
+- **Manutenibilidade**: Código organizado por responsabilidade
+- **Escalabilidade**: Fácil adicionar novas funcionalidades
+- **Testabilidade**: Cada módulo pode ser testado isoladamente
+- **Reutilização**: Funções utilitárias compartilhadas
+- **Legibilidade**: Código mais fácil de entender e navegar
+
+## 🔧 Estrutura dos Módulos
+
+### `config.py`
+- Configurações Flask, SQLAlchemy, Flask-Login
+- Definição de perfis e permissões
+
+### `models.py`
+- Definição de todas as tabelas do banco
+- Relacionamentos e métodos dos modelos
+
+### `forms.py`
+- Todos os formulários WTForms
+- Validações e campos dos formulários
+
+### `auth.py`
+- Decorators de permissão (`@requer_admin`, `@requer_gerente_ou_admin`)
+- Funções de autorização
+
+### `utils.py`
+- Funções helper (formatação, cálculos, etc.)
+- Lógica reutilizável
+
+### `routes/`
+- **auth.py**: Login, logout
+- **main.py**: Dashboard, página inicial
+- **usuarios.py**: CRUD de usuários
+- **produtos.py**: CRUD de produtos
+
+### `app.py`
+- Factory pattern para criar aplicação
+- Registro de blueprints e extensões
+- Inicialização do banco e usuário admin
 2. Acesse [render.com](https://render.com) → New Web Service
 3. Conecte o repositório
 4. Configure:
