@@ -1,4 +1,4 @@
-# 🏍️ Moto Chefe ERP
+# 🏍️ Mobility ERP
 
 Sistema de gestão para loja de motocicletas elétricas — Flask + PostgreSQL.
 
@@ -48,8 +48,8 @@ erp-motos/
 
 ```bash
 # 1. Clone o repositório
-git clone https://github.com/seu-usuario/moto-chefe-ERP.git
-cd moto-chefe-ERP
+git clone https://github.com/thiagoph1/erp-motos.git
+cd erp-motos
 
 # 2. Crie um ambiente virtual
 python -m venv venv
@@ -139,7 +139,7 @@ Login padrão: `admin` / `Admin@123` *(troque após o primeiro acesso!)*
 ## Estrutura do projeto
 
 ```
-moto-chefe-ERP/
+erp-motos/
 ├── app.py                # Aplicação Flask (modelos, rotas, formulários)
 ├── requirements.txt
 ├── Procfile              # Comando para o Render

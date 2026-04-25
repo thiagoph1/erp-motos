@@ -1,5 +1,5 @@
 """
-Aplicação principal ERP Motos
+Aplicação principal Mobility
 """
 from flask import Flask
 from flask_login import LoginManager
@@ -80,7 +80,7 @@ def criar_usuario_admin():
         admin = Usuario(
             nome='Administrador',
             username='admin',
-            email='admin@motochefe.com',
+            email='admin@mobility.com',
             perfil='admin',
             ativo=True
         )
