@@ -121,11 +121,11 @@
 
   <div class="nav-section">Comercial</div>
   <nav class="nav flex-column">
-    <a href="{{ url_for('vendas') }}"
+    <a href="{{ url_for('vendas.index') }}"
        class="nav-link {% if 'venda' in (request.endpoint or '') %}active{% endif %}">
       <i class="bi bi-cart3"></i> Vendas
     </a>
-    <a href="{{ url_for('clientes') }}"
+    <a href="{{ url_for('clientes.index') }}"
        class="nav-link {% if 'cliente' in (request.endpoint or '') %}active{% endif %}">
       <i class="bi bi-people"></i> Clientes
     </a>
@@ -134,7 +134,7 @@
   {% if current_user.perfil in ['admin', 'gerente'] %}
   <div class="nav-section">Financeiro</div>
   <nav class="nav flex-column">
-    <a href="{{ url_for('financeiro') }}"
+    <a href="{{ url_for('financeiro.index') }}"
        class="nav-link {% if 'financeiro' in (request.endpoint or '') or 'lancamento' in (request.endpoint or '') %}active{% endif %}">
       <i class="bi bi-cash-stack"></i> Caixa / Lançamentos
     </a>
