@@ -1,0 +1,67 @@
+"""
+Formulários WTForms da aplicação
+"""
+from flask_wtf import FlaskForm
+from wtforms import StringField, PasswordField, SubmitField, FloatField, IntegerField, SelectField, TextAreaField
+from wtforms.validators import DataRequired, Length, Optional, Email
+
+
+class LoginForm(FlaskForm):
+    """Formulário de login"""
+    username = StringField('Usuário', validators=[DataRequired()])
+    password = PasswordField('Senha', validators=[DataRequired()])
+    submit = SubmitField('Entrar')
+
+
+class UsuarioForm(FlaskForm):
+    """Formulário para criação/edição de usuários"""
+    nome = StringField('Nome completo', validators=[DataRequired(), Length(2, 100)])
+    username = StringField('Usuário (login)', validators=[DataRequired(), Length(3, 50)])
+    email = StringField('E-mail', validators=[Optional(), Email()])
+    perfil = SelectField('Perfil', choices=[
+        ('vendedor', 'Vendedor'),
+        ('gerente', 'Gerente'),
+        ('admin', 'Administrador')
+    ])
+    senha = PasswordField('Senha', validators=[Optional(), Length(6)])
+    submit = SubmitField('Salvar')
+
+
+class ProdutoForm(FlaskForm):
+    """Formulário para criação/edição de produtos"""
+    nome = StringField('Nome', validators=[DataRequired()])
+    tipo = SelectField('Tipo', choices=[
+        ('moto', 'Motocicleta'),
+        ('peca', 'Peça / Acessório')
+    ])
+    marca = StringField('Marca', validators=[Optional()])
+    modelo = StringField('Modelo', validators=[Optional()])
+    descricao = TextAreaField('Descrição', validators=[Optional()])
+    preco_custo = FloatField('Preço de custo (R$)', validators=[Optional()])
+    preco_venda = FloatField('Preço de venda (R$)', validators=[DataRequired()])
+    quantidade = IntegerField('Quantidade em estoque', validators=[DataRequired()])
+    estoque_minimo = IntegerField('Estoque mínimo', validators=[DataRequired()])
+    submit = SubmitField('Salvar')
+
+
+class ClienteForm(FlaskForm):
+    """Formulário para criação/edição de clientes"""
+    nome = StringField('Nome', validators=[DataRequired()])
+    cpf = StringField('CPF', validators=[Optional()])
+    telefone = StringField('Telefone', validators=[Optional()])
+    email = StringField('E-mail', validators=[Optional()])
+    endereco = StringField('Endereço', validators=[Optional()])
+    submit = SubmitField('Salvar')
+
+
+class LancamentoForm(FlaskForm):
+    """Formulário para lançamentos financeiros"""
+    descricao = StringField('Descrição', validators=[DataRequired()])
+    tipo = SelectField('Tipo', choices=[
+        ('receita', 'Receita'),
+        ('despesa', 'Despesa')
+    ])
+    valor = FloatField('Valor (R$)', validators=[DataRequired()])
+    categoria = StringField('Categoria', validators=[Optional()])
+    data = StringField('Data', validators=[DataRequired()])
+    submit = SubmitField('Salvar')
