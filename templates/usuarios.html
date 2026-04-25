@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="mb-3">
-  <a href="{{ url_for('usuario_novo') }}" class="btn btn-sm" style="background:#00c896;color:#0f172a;font-weight:600">
+  <a href="{{ url_for('usuarios.novo') }}" class="btn btn-sm" style="background:#00c896;color:#0f172a;font-weight:600">
     <i class="bi bi-person-plus me-1"></i>Novo usuário
   </a>
 </div>
@@ -41,11 +41,11 @@
           </td>
           <td class="text-muted small">{{ u.criado_em.strftime('%d/%m/%Y') }}</td>
           <td class="text-end pe-3">
-            <a href="{{ url_for('usuario_editar', id=u.id) }}" class="btn btn-sm btn-outline-secondary py-0 px-2">
+            <a href="{{ url_for('usuarios.editar', id=u.id) }}" class="btn btn-sm btn-outline-secondary py-0 px-2">
               <i class="bi bi-pencil"></i>
             </a>
             {% if u.id != current_user.id %}
-            <form method="POST" action="{{ url_for('usuario_desativar', id=u.id) }}" class="d-inline">
+            <form method="POST" action="{{ url_for('usuarios.toggle', id=u.id) }}" class="d-inline">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button class="btn btn-sm {% if u.ativo %}btn-outline-warning{% else %}btn-outline-success{% endif %} py-0 px-2"
                       title="{{ 'Desativar' if u.ativo else 'Ativar' }}">

@@ -5,7 +5,7 @@
 {% block content %}
 <div class="d-flex gap-2 mb-3 flex-wrap">
   {% if current_user.perfil in ['admin', 'gerente'] %}
-  <a href="{{ url_for('produto_novo') }}" class="btn btn-sm" style="background:#00c896;color:#0f172a;font-weight:600">
+  <a href="{{ url_for('produtos.novo') }}" class="btn btn-sm" style="background:#00c896;color:#0f172a;font-weight:600">
     <i class="bi bi-plus-lg me-1"></i>Novo produto
   </a>
   {% endif %}
@@ -66,11 +66,11 @@
           </td>
           {% if current_user.perfil in ['admin', 'gerente'] %}
           <td class="text-end pe-3">
-            <a href="{{ url_for('produto_editar', id=p.id) }}" class="btn btn-sm btn-outline-secondary py-0 px-2">
+            <a href="{{ url_for('produtos.editar', id=p.id) }}" class="btn btn-sm btn-outline-secondary py-0 px-2">
               <i class="bi bi-pencil"></i>
             </a>
             {% if current_user.perfil == 'admin' %}
-            <form method="POST" action="{{ url_for('produto_excluir', id=p.id) }}" class="d-inline"
+            <form method="POST" action="{{ url_for('produtos.excluir', id=p.id) }}" class="d-inline"
                   onsubmit="return confirm('Excluir produto {{ p.nome }}?')">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button class="btn btn-sm btn-outline-danger py-0 px-2"><i class="bi bi-trash"></i></button>
