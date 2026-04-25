@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+load_dotenv()  # carrega o .env automaticamente se existir
 from flask import Flask, render_template, request, redirect, url_for, flash, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
