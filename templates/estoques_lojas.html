@@ -44,21 +44,17 @@
           <th class="ps-3">Loja</th>
           <th>Produto</th>
           <th>Quantidade</th>
-          <th>Estoque mínimo</th>
           <th>Valor total</th>
-          <th>Mínimo global</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
         {% for estoque in estoques %}
-        <tr {% if estoque.abaixo_minimo %}class="table-warning"{% endif %}>
+        <tr>
           <td class="ps-3">{{ estoque.loja.nome }}</td>
           <td>{{ estoque.produto.nome }}</td>
-          <td>{{ estoque.quantidade }}</td>
-          <td>{{ estoque.estoque_minimo }}</td>
+          <td><strong>{{ estoque.quantidade }}</strong></td>
           <td>{{ estoque.valor_total | formatar_moeda }}</td>
-          <td class="text-muted small">{{ estoque.produto.estoque_minimo }} mínimo global</td>
           <td class="text-end pe-3">
             <div class="btn-group" role="group">
               <a href="{{ url_for('lojas.estoque_editar', id=estoque.id) }}" class="btn btn-sm btn-outline-primary py-0 px-2" title="Editar">
@@ -73,7 +69,7 @@
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="7" class="text-center text-muted py-4">
+        <tr><td colspan="5" class="text-center text-muted py-4">
           <i class="bi bi-box-seam display-4 text-muted"></i>
           <div>Nenhum registro de estoque por loja encontrado.</div>
         </td></tr>

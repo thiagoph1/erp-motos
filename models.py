@@ -183,7 +183,6 @@ class EstoqueLoja(db.Model):
     loja_id = db.Column(db.Integer, db.ForeignKey('loja.id'), nullable=False)
     produto_id = db.Column(db.Integer, db.ForeignKey('produto.id'), nullable=False)
     quantidade = db.Column(db.Integer, default=0)
-    estoque_minimo = db.Column(db.Integer, default=1)
     ultima_atualizacao = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     # Relacionamentos
@@ -192,11 +191,6 @@ class EstoqueLoja(db.Model):
     __table_args__ = (
         db.UniqueConstraint('loja_id', 'produto_id', name='unique_loja_produto'),
     )
-
-    @property
-    def abaixo_minimo(self):
-        """Verifica se o estoque está abaixo do mínimo"""
-        return self.quantidade <= self.estoque_minimo
 
     @property
     def valor_total(self):

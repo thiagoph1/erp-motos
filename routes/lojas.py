@@ -109,8 +109,7 @@ def estoque_novo():
         estoque = EstoqueLoja(
             loja_id=form.loja_id.data,
             produto_id=form.produto_id.data,
-            quantidade=form.quantidade.data,
-            estoque_minimo=form.estoque_minimo.data
+            quantidade=form.quantidade.data
         )
         db.session.add(estoque)
         db.session.commit()
@@ -133,7 +132,6 @@ def estoque_editar(id):
         estoque.loja_id = form.loja_id.data
         estoque.produto_id = form.produto_id.data
         estoque.quantidade = form.quantidade.data
-        estoque.estoque_minimo = form.estoque_minimo.data
         db.session.commit()
 
         flash('Estoque por loja atualizado com sucesso!', 'success')

@@ -79,5 +79,4 @@ class EstoqueLojaForm(FlaskForm):
     loja_id = SelectField('Loja', coerce=int, validators=[DataRequired()])
     produto_id = SelectField('Produto', coerce=int, validators=[DataRequired()])
     quantidade = IntegerField('Quantidade', validators=[DataRequired()])
-    estoque_minimo = IntegerField('Estoque mínimo', validators=[DataRequired()])
     submit = SubmitField('Salvar')
