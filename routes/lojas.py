@@ -4,8 +4,14 @@ Rotas de gerenciamento de lojas
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
 from models import Loja, Produto, EstoqueLoja, db
-from forms import LojaForm, EstoqueLojaForm
-from auth import requer_admin
+from forms import (
+    LojaForm,
+    EstoqueLojaForm,
+    ProdutoSaidaForm,
+    ProdutoMovimentarForm,
+    ProdutoChegadaForm
+)
+from auth import requer_admin, requer_gerente_ou_admin
 
 lojas_bp = Blueprint('lojas', __name__, url_prefix='/lojas')
 
@@ -16,27 +22,6 @@ def index():
     """Lista todas as lojas"""
     lojas = Loja.query.order_by(Loja.nome).all()
     return render_template('lojas.html', lojas=lojas)
-
-
-@lojas_bp.route('/produto/venda')
-@login_required
-def produto_venda():
-    """Página para saída de produto de loja"""
-    return render_template('produto_venda.html')
-
-
-@lojas_bp.route('/produto/movimentar')
-@login_required
-def produto_movimentar():
-    """Página para movimentar produto entre lojas"""
-    return render_template('produto_movimentar.html')
-
-
-@lojas_bp.route('/produto/chegada')
-@login_required
-def produto_chegada():
-    """Página para registrar chegada de produto"""
-    return render_template('produto_chegada.html')
 
 
 @lojas_bp.route('/novo', methods=['GET', 'POST'])
@@ -90,6 +75,127 @@ def _load_estoque_choices(form):
         for produto in Produto.query.order_by(Produto.nome).all()
     ]
     return form
+
+
+def _load_produto_choices(form):
+    form.produto_id.choices = [
+        (produto.id, f"{produto.nome} ({produto.tipo})")
+        for produto in Produto.query.order_by(Produto.nome).all()
+    ]
+    return form
+
+
+def _load_movimentar_choices(form):
+    form.loja_origem_id.choices = [(loja.id, loja.nome) for loja in Loja.query.order_by(Loja.nome).all()]
+    form.loja_destino_id.choices = [(loja.id, loja.nome) for loja in Loja.query.order_by(Loja.nome).all()]
+    _load_produto_choices(form)
+    return form
+
+
+def _load_chegada_saida_choices(form):
+    form.loja_id.choices = [(loja.id, loja.nome) for loja in Loja.query.order_by(Loja.nome).all()]
+    _load_produto_choices(form)
+    return form
+
+
+@lojas_bp.route('/produto/venda', methods=['GET', 'POST'])
+@login_required
+@requer_gerente_ou_admin
+def produto_venda():
+    """Registrar saída de produto de uma loja"""
+    form = _load_chegada_saida_choices(ProdutoSaidaForm())
+
+    if form.validate_on_submit():
+        estoque = EstoqueLoja.query.filter_by(
+            loja_id=form.loja_id.data,
+            produto_id=form.produto_id.data
+        ).first()
+        if not estoque:
+            flash('Produto não encontrado no estoque da loja selecionada.', 'danger')
+            return render_template('produto_venda.html', form=form)
+
+        if form.quantidade.data > estoque.quantidade:
+            flash('Quantidade maior que o estoque disponível.', 'danger')
+            return render_template('produto_venda.html', form=form)
+
+        estoque.quantidade -= form.quantidade.data
+        db.session.commit()
+
+        flash('Saída de produto registrada com sucesso!', 'success')
+        return redirect(url_for('lojas.estoque'))
+
+    return render_template('produto_venda.html', form=form)
+
+
+@lojas_bp.route('/produto/movimentar', methods=['GET', 'POST'])
+@login_required
+@requer_gerente_ou_admin
+def produto_movimentar():
+    """Transferir produto entre lojas"""
+    form = _load_movimentar_choices(ProdutoMovimentarForm())
+
+    if form.validate_on_submit():
+        if form.loja_origem_id.data == form.loja_destino_id.data:
+            flash('A loja de origem e destino devem ser diferentes.', 'danger')
+            return render_template('produto_movimentar.html', form=form)
+
+        origem = EstoqueLoja.query.filter_by(
+            loja_id=form.loja_origem_id.data,
+            produto_id=form.produto_id.data
+        ).first()
+        if not origem or form.quantidade.data > origem.quantidade:
+            flash('Estoque insuficiente na loja de origem.', 'danger')
+            return render_template('produto_movimentar.html', form=form)
+
+        destino = EstoqueLoja.query.filter_by(
+            loja_id=form.loja_destino_id.data,
+            produto_id=form.produto_id.data
+        ).first()
+        if not destino:
+            destino = EstoqueLoja(
+                loja_id=form.loja_destino_id.data,
+                produto_id=form.produto_id.data,
+                quantidade=0
+            )
+            db.session.add(destino)
+
+        origem.quantidade -= form.quantidade.data
+        destino.quantidade += form.quantidade.data
+        db.session.commit()
+
+        flash('Movimentação de produto registrada com sucesso!', 'success')
+        return redirect(url_for('lojas.estoque'))
+
+    return render_template('produto_movimentar.html', form=form)
+
+
+@lojas_bp.route('/produto/chegada', methods=['GET', 'POST'])
+@login_required
+@requer_gerente_ou_admin
+def produto_chegada():
+    """Registrar chegada de produto na loja"""
+    form = _load_chegada_saida_choices(ProdutoChegadaForm())
+
+    if form.validate_on_submit():
+        estoque = EstoqueLoja.query.filter_by(
+            loja_id=form.loja_id.data,
+            produto_id=form.produto_id.data
+        ).first()
+        if not estoque:
+            estoque = EstoqueLoja(
+                loja_id=form.loja_id.data,
+                produto_id=form.produto_id.data,
+                quantidade=0
+            )
+            db.session.add(estoque)
+
+        estoque.quantidade += form.quantidade.data
+        db.session.commit()
+
+        flash('Chegada de produto registrada com sucesso!', 'success')
+        return redirect(url_for('lojas.estoque'))
+
+    return render_template('produto_chegada.html', form=form)
 
 
 @lojas_bp.route('/estoque')

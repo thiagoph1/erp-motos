@@ -3,7 +3,7 @@ Formulários WTForms da aplicação
 """
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, FloatField, IntegerField, SelectField, TextAreaField
-from wtforms.validators import DataRequired, Length, Optional, Email
+from wtforms.validators import DataRequired, Length, Optional, Email, NumberRange
 
 
 class LoginForm(FlaskForm):
@@ -78,5 +78,30 @@ class EstoqueLojaForm(FlaskForm):
     """Formulário para estoque por loja"""
     loja_id = SelectField('Loja', coerce=int, validators=[DataRequired()])
     produto_id = SelectField('Produto', coerce=int, validators=[DataRequired()])
-    quantidade = IntegerField('Quantidade', validators=[DataRequired()])
+    quantidade = IntegerField('Quantidade', validators=[DataRequired(), NumberRange(min=1)])
     submit = SubmitField('Salvar')
+
+
+class ProdutoSaidaForm(FlaskForm):
+    """Formulário para saída de produto da loja"""
+    loja_id = SelectField('Loja', coerce=int, validators=[DataRequired()])
+    produto_id = SelectField('Produto', coerce=int, validators=[DataRequired()])
+    quantidade = IntegerField('Quantidade', validators=[DataRequired(), NumberRange(min=1)])
+    submit = SubmitField('Registrar Saída')
+
+
+class ProdutoMovimentarForm(FlaskForm):
+    """Formulário para movimentar produto entre lojas"""
+    loja_origem_id = SelectField('Loja de origem', coerce=int, validators=[DataRequired()])
+    loja_destino_id = SelectField('Loja de destino', coerce=int, validators=[DataRequired()])
+    produto_id = SelectField('Produto', coerce=int, validators=[DataRequired()])
+    quantidade = IntegerField('Quantidade', validators=[DataRequired(), NumberRange(min=1)])
+    submit = SubmitField('Transferir')
+
+
+class ProdutoChegadaForm(FlaskForm):
+    """Formulário para chegada de produto na loja"""
+    loja_id = SelectField('Loja', coerce=int, validators=[DataRequired()])
+    produto_id = SelectField('Produto', coerce=int, validators=[DataRequired()])
+    quantidade = IntegerField('Quantidade', validators=[DataRequired(), NumberRange(min=1)])
+    submit = SubmitField('Registrar Chegada')
