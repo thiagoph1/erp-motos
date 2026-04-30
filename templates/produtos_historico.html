@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Histórico de Produtos – ERP Mobility{% endblock %}
+{% block page_title %}Histórico de Produtos Excluídos{% endblock %}
+
+{% block content %}
+<div class="d-flex gap-2 mb-3">
+  <a href="{{ url_for('produtos.index') }}" class="btn btn-sm btn-outline-secondary">
+    <i class="bi bi-arrow-left me-1"></i>Voltar aos Produtos
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-hover mb-0 align-middle">
+      <thead class="table-light">
+        <tr>
+          <th class="ps-3">Nome</th>
+          <th>Tipo</th>
+          <th>Marca / Modelo</th>
+          <th>Custo</th>
+          <th>Venda</th>
+          <th>Excluído em</th>
+          <th>Excluído por</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for p in produtos %}
+        <tr>
+          <td class="ps-3 fw-500">{{ p.nome }}</td>
+          <td>
+            {% if p.tipo == 'moto' %}
+              <span class="badge bg-primary">Moto</span>
+            {% else %}
+              <span class="badge bg-secondary">Peça</span>
+            {% endif %}
+          </td>
+          <td>{{ p.marca }} {{ p.modelo }}</td>
+          <td>R$ {{ "%.2f"|format(p.preco_custo) }}</td>
+          <td>R$ {{ "%.2f"|format(p.preco_venda) }}</td>
+          <td>{{ p.deleted_at.strftime('%d/%m/%Y %H:%M') if p.deleted_at else '-' }}</td>
+          <td>{{ p.deletor.nome if p.deletor else '-' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if not produtos %}
+<div class="text-center py-5">
+  <i class="bi bi-info-circle fs-1 text-muted mb-3"></i>
+  <h5 class="text-muted">Nenhum produto excluído encontrado</h5>
+</div>
+{% endif %}
+{% endblock %}

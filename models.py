@@ -50,9 +50,15 @@ class Produto(db.Model):
     preco_custo = db.Column(db.Float, default=0.0)
     preco_venda = db.Column(db.Float, nullable=False)
     criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+    created_by = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    deleted_at = db.Column(db.DateTime, nullable=True)
+    deleted_by = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=True)
+    is_deleted = db.Column(db.Boolean, default=False)
 
     # Relacionamentos
     itens_venda = db.relationship('ItemVenda', backref='produto', lazy=True)
+    criador = db.relationship('Usuario', foreign_keys=[created_by], backref='produtos_criados')
+    deletor = db.relationship('Usuario', foreign_keys=[deleted_by], backref='produtos_deletados')
 
     @property
     def quantidade(self):

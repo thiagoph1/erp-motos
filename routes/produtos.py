@@ -1,8 +1,9 @@
 """
 Rotas de gerenciamento de produtos
 """
+from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_required
+from flask_login import login_required, current_user
 from models import Produto, db
 from forms import ProdutoForm
 from auth import requer_gerente_ou_admin
@@ -17,7 +18,7 @@ def index():
     tipo_filtro = request.args.get('tipo')
     busca = request.args.get('busca')
 
-    query = Produto.query
+    query = Produto.query.filter_by(is_deleted=False)
 
     if tipo_filtro:
         query = query.filter_by(tipo=tipo_filtro)
@@ -43,7 +44,8 @@ def novo():
             modelo=form.modelo.data,
             descricao=form.descricao.data,
             preco_custo=form.preco_custo.data or 0,
-            preco_venda=form.preco_venda.data
+            preco_venda=form.preco_venda.data,
+            created_by=current_user.id
         )
 
         db.session.add(produto)
@@ -83,10 +85,21 @@ def editar(id):
 @login_required
 @requer_gerente_ou_admin
 def excluir(id):
-    """Excluir produto"""
+    """Excluir produto (soft delete)"""
     produto = Produto.query.get_or_404(id)
-    db.session.delete(produto)
+    produto.is_deleted = True
+    produto.deleted_at = datetime.utcnow()
+    produto.deleted_by = current_user.id
     db.session.commit()
 
     flash('Produto excluído com sucesso!', 'warning')
     return redirect(url_for('produtos.index'))
+
+
+@produtos_bp.route('/historico')
+@login_required
+@requer_gerente_ou_admin
+def historico():
+    """Lista produtos excluídos (histórico)"""
+    produtos_excluidos = Produto.query.filter_by(is_deleted=True).order_by(Produto.deleted_at.desc()).all()
+    return render_template('produtos_historico.html', produtos=produtos_excluidos)
