@@ -18,6 +18,27 @@ def index():
     return render_template('lojas.html', lojas=lojas)
 
 
+@lojas_bp.route('/produto/venda')
+@login_required
+def produto_venda():
+    """Página para saída de produto de loja"""
+    return render_template('produto_venda.html')
+
+
+@lojas_bp.route('/produto/movimentar')
+@login_required
+def produto_movimentar():
+    """Página para movimentar produto entre lojas"""
+    return render_template('produto_movimentar.html')
+
+
+@lojas_bp.route('/produto/chegada')
+@login_required
+def produto_chegada():
+    """Página para registrar chegada de produto"""
+    return render_template('produto_chegada.html')
+
+
 @lojas_bp.route('/novo', methods=['GET', 'POST'])
 @login_required
 @requer_admin

@@ -195,6 +195,22 @@
     </a>
   </nav>
 
+  <div class="nav-section">Produto</div>
+  <nav class="nav flex-column">
+    <a href="{{ url_for('lojas.produto_venda') }}"
+       class="nav-link {% if request.endpoint == 'lojas.produto_venda' %}active{% endif %}">
+      <i class="bi bi-arrow-right-circle"></i> Venda
+    </a>
+    <a href="{{ url_for('lojas.produto_movimentar') }}"
+       class="nav-link {% if request.endpoint == 'lojas.produto_movimentar' %}active{% endif %}">
+      <i class="bi bi-arrow-left-right"></i> Movimentar
+    </a>
+    <a href="{{ url_for('lojas.produto_chegada') }}"
+       class="nav-link {% if request.endpoint == 'lojas.produto_chegada' %}active{% endif %}">
+      <i class="bi bi-box-arrow-in-down"></i> Chegada
+    </a>
+  </nav>
+
   <div class="nav-section">Comercial</div>
   <nav class="nav flex-column">
     <a href="{{ url_for('vendas.index') }}"
